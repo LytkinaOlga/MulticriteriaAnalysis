@@ -5,9 +5,9 @@
     <title>Multicriteria Analysis</title>
 </head>
 <body>
-<form method="post" >
-    <p>Введите количество критериев <input  placeholder="количество критериев" name="criteriesCount"></p>
-    <p>Введите количество варинтов <input  placeholder="количество вариантов" name="optionCount"></p>
+<form method="post" th:object="${form}" th:action="@{/}">
+    <p>Введите количество критериев <input  placeholder="количество критериев" th:field="*{criteriesCount}"></p>
+    <p>Введите количество варинтов <input  placeholder="количество вариантов" th:field="*{optionCount}" ></p>
     <p><input type="submit" value="Далее" />
 </form>
 </body>

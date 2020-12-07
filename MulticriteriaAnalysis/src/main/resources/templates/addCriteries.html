@@ -5,21 +5,21 @@
     <title>Title</title>
 </head>
 <body>
-<p th:text="'Количество критериев: ' + ${criteriesCount} + '!'" />
-<p th:text="'Количество вариантов: ' + ${optionCount} + '!'" />
-<form method="post" >
+<p th:text="'Количество критериев: ' + ${form.criteriesCount} + '!'" />
+<p th:text="'Количество вариантов: ' + ${form.optionCount} + '!'" />
+<form method="post" th:action="@{/addCriteries}">
 <p>Заполните таблицу критериев</p>
     <table border="1">
         <tr>
             <th>Название критерия</th>
             <th>Вес критерия</th>
         </tr>
-        <tr th:each="critery : ${criteries}">
+        <tr th:each="critery : ${criteries}" >
             <td >
                 <input  placeholder="введите название критерия" name="criteryName" >
             </td>
             <td >
-                <input  placeholder="введите вес критерия" name="criteryWeight">
+                <input  placeholder="введите вес критерия" name="criteryWeight" >
             </td>
         </tr>
     </table>
@@ -29,10 +29,10 @@
         <tr>
             <th>Вариант</th>
         </tr>
-        <tr th:each="option : ${options}">
+        <tr th:each="option : ${options}" >
 
             <td >
-                <input  placeholder="введите вариант" name="optionName" >
+                <input  placeholder="введите вариант" >
             </td>
         </tr>
     </table>

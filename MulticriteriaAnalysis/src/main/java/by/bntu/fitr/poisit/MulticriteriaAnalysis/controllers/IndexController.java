@@ -27,44 +27,37 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(Model model){
-        model.addAttribute("criteries", new CriteryService());
-        model.addAttribute("options", new OptionService());
+        model.addAttribute("form", new Form());
+
         return "index";
     }
     @PostMapping("/")
-    public String addCriteries(@RequestParam("criteriesCount") int criteriesCount,
-                        @RequestParam("optionCount") int optionCount,
-                        @ModelAttribute("criteries") CriteryService criteries,
-                        @ModelAttribute("options") OptionService options,
-                        Model model) {
-        model.addAttribute("criteriesCount", criteriesCount);
-        model.addAttribute("optionCount", optionCount);
+    public String indexSubmit(@ModelAttribute Form form, Model model) {
+        model.addAttribute("form", form);
 
-        List<Critery> criteriesList = Arrays.asList(criteryService.createArrayOfCriteries(criteriesCount));
-        List<Option> optionsList = Arrays.asList(optionService.createArrayOfOptions(optionCount));
+        List<Critery> criteries = Arrays.asList(criteryService.createArrayOfCriteries(form.getCriteriesCount()));
+        List<Option> options = Arrays.asList(optionService.createArrayOfOptions(form.getOptionCount()));
 
-        model.addAttribute("criteries", criteriesList);
-        model.addAttribute("options", optionsList);
+        model.addAttribute("criteries", criteries);
+        model.addAttribute("options", options);
         return "addCriteries";
     }
 
     @GetMapping("/addCriteries")
     public String criteries(Model model){
-        model.addAttribute("critery", new Critery());
-        model.addAttribute("option", new Option());
+
         return "addCriteries";
     }
 
     @PostMapping("/addCriteries")
     public String saveCriteries(@RequestParam("criteryName") String criteryName,
-                                @RequestParam("criteryWeight") String criteryWeight,
+                                @RequestParam("criteryWeight") int criteryWeight,
                                 @ModelAttribute("criteries") List<Critery> criteries,
                                 @ModelAttribute("options") List<Option> options,
-                                @ModelAttribute("critery") Critery critery,
-                                @ModelAttribute("option") Option option,
+
                                 Model model){
-        criteries.add(critery);
-        options.add(option);
+        criteries.add(new Critery(criteryName, criteryWeight));
+        model.addAttribute("criteries", criteries);
         return "mainTable";
     }
     @GetMapping("/mainTable")
