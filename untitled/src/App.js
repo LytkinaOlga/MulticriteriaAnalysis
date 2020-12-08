@@ -12,7 +12,8 @@ class App extends React.Component {
             criteriaAmount: 0,
             optionAmount: 0,
             stage: 1,
-            arrayOfSum: 0,
+            maxSum: 0,
+            answer: "",
         }
         this.CriteriaTable = this.CriteriaTable.bind(this);
         this.generateCriteriaArray = this.generateCriteriaArray.bind(this);
@@ -22,13 +23,15 @@ class App extends React.Component {
         this.generateMarkArrayOfArray = this.generateMarkArrayOfArray.bind(this);
         this.MarkTable = this.MarkTable.bind(this);
         this.MarkRow = this.MarkRow.bind(this);
+        this.generateArrayOfSum = this.generateArrayOfSum.bind(this);
+        this.ResultColumnOfSum = this.ResultColumnOfSum.bind(this);
     }
 
     render() {
         switch (this.state.stage) {
             case 1:
                 return (
-                    <div className="App">
+                    <div className="App" align="center">
                         <h3>Количество критериев</h3>
                         <div>
                             <input value={this.state.criteriaAmount} onChange={
@@ -51,25 +54,26 @@ class App extends React.Component {
                                 }
                             }/>
                         </div>
-                        <button onClick={() => {
+                        <button class="btn btn-success" onClick={() => {
                             this.generateCriteriaArray();
                             this.generateMarkArrayOfArray();
-                        }}>Ok
+                            this.generateArrayOfSum();
+                        }}>Далее
                         </button>
                     </div>
                 );
             case 2:
                 return (
-                    <div> Заполните критерии
-                        <table>
+                    <div align="center"> <h1>Заполните критерии</h1>
+                        <table class="table table-hover">
                             <thead>
-                            <td>Имя</td>
-                            <td>Вес</td>
+                            <td >Имя</td>
+                            <td >Вес</td>
                             </thead>
                             <this.CriteriaTable/>
                         </table>
 
-                        <button onClick={
+                        <button class="btn btn-success" onClick={
                             () => {
                                 console.log(this.state.critters);
                                 axios.post(serverUrl + "/", this.state.critters)
@@ -78,21 +82,21 @@ class App extends React.Component {
                                 this.generateOptionArray();
                             }
                         }>
-                            Submit
+                            Далее
                         </button>
                     </div>
                 )
             case 3:
                 return (
-                    <div>
+                    <div align = "center">
                         Заполните варианты
-                        <table>
+                        <table class="table table-hover">
                             <thead>
                             <td>Имя</td>
                             </thead>
                             <this.OptionTable/>
                         </table>
-                        <button onClick={
+                        <button class="btn btn-success" onClick={
                             () => {
                                 console.log(this.state.options);
                                 axios.post(serverUrl + "/options", this.state.options)
@@ -103,34 +107,71 @@ class App extends React.Component {
                                 })
                             }
                         }>
-                            Submit
+                            Далее
                         </button>
                     </div>
                 )
             case 4:
                 return (
-                    <div>
+                    <div align = "center">
                         Проставьте оценки
-                        <table >
-                            <tr><th>Пустая ячейка</th><td><this.CriteriaPartInMainTable/></td><th>Сумма</th></tr>
+                        <table class="table table-hover">
+                            <tr><th></th><td><this.CriteriaPartInMainTable/></td><th>Сумма</th></tr>
                             <tr><td><this.OptionTable/></td><this.MarkTable/></tr>
                         </table>
-                        <button onClick={
+                        <button class="btn btn-success" onClick={
                             () => {
                                 console.log(this.state.markss);
                                 axios.post(serverUrl + "/getMarks", this.state.markss)
                                     .then(r => console.log("success"));
-                                axios.get(serverUrl + "/getSumOfMarks", this.state.arrayOfSum)
-                                    .then(r => console(r.data))
+                                axios.get(serverUrl + "/getSumOfMarks", this.state.arrayOfSum).then(r=>console.log(r.data))
+                                axios.get(serverUrl + "/getMaxSum", this.state.maxSum).then(r => this.setState((state) => {
+                                    state.maxSum = r.data;
+                                    return state;
+                                }))
+                                axios.get(serverUrl + "/getAnswer", this.state.answer).then(r => this.setState((state) => {
+                                    state.answer = r.data;
+                                    return state;
+                                }))
+                                this.setState((state) => {
+                                    state.stage = 5;
+                                    return state;
+                                })
+
+
                             }
                         }>
-                            Submit
+                            Рассчитать
                         </button>
+                    </div>
+                )
+            case 5:
+                return (
+                    <div align="center">
+                        Результат
+                        <table class="table table-hover">
+                            <tr><th></th><td><this.CriteriaPartInMainTable/></td><th>Сумма</th></tr>
+                            <tr><td><this.OptionTable/></td><this.MarkTable/><td><this.ResultColumnOfSum/></td></tr>
+                        </table>
+                        Наибольшее значение: {this.state.maxSum}
+                        <div>
+                        Ответ: {this.state.answer}
+                        </div>
                     </div>
                 )
 
         }
 
+    }
+    generateArrayOfSum(){
+        let arrayOfSum = [];
+        for (let i = 0; i < this.state.optionAmount; i++) {
+            arrayOfSum[i] = 0
+        }
+        this.setState((state) => {
+            state.arrayOfSum = arrayOfSum;
+            return state;
+        })
     }
 
 
@@ -139,7 +180,7 @@ class App extends React.Component {
         for (let i = 0; i < this.state.criteriaAmount; i++) {
             critters[i] = {
                 name: "",
-                weight: 0,
+                weight: 0.0,
             }
         }
 
@@ -176,6 +217,8 @@ class App extends React.Component {
             return state;
         })
     }
+
+
 
     MarkTable(){
         console.log(this.state);
@@ -285,6 +328,16 @@ class App extends React.Component {
                 )
             })
 
+    }
+    ResultColumnOfSum(){
+        return this.state.arrayOfSum.map(
+            (sum, index) => {
+                return (
+                    <tr>
+                        <td>{sum}</td>
+                    </tr>
+                )
+            })
     }
 
     createMainTable(){
