@@ -14,12 +14,12 @@
             <th>Название критерия</th>
             <th>Вес критерия</th>
         </tr>
-        <tr th:each="critery : ${criteries}" >
+        <tr th:each="critery, state: ${criteries}" >
             <td >
-                <input  placeholder="введите название критерия" name="criteryName" >
+                <input  placeholder="введите название критерия" th:name="'criteryName' + ${state.index}" >
             </td>
             <td >
-                <input  placeholder="введите вес критерия" name="criteryWeight" >
+                <input  placeholder="введите вес критерия" th:name="'criteryWeight' + ${state.index}" >
             </td>
         </tr>
     </table>
