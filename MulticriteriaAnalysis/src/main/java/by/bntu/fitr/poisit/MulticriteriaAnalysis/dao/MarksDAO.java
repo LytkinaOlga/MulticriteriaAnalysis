@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 @Component
 public class MarksDAO {
-    public List<List<Integer>> marks;
+    public List<List<Double>> marks;
 }

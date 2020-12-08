@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Critery {
     String name;
-    int weight;
+    double weight;
 }
